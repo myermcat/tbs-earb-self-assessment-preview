@@ -1,0 +1,583 @@
+<title>EARB tool backlog</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%232a4b8d%22%2F%3E%3Crect%20x%3D%227%22%20y%3D%2220%22%20width%3D%224%22%20height%3D%226%22%20rx%3D%221%22%20fill%3D%22%239ec4ff%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%224%22%20height%3D%2212%22%20rx%3D%221%22%20fill%3D%22%237fd39b%22%2F%3E%3Crect%20x%3D%2221%22%20y%3D%227%22%20width%3D%224%22%20height%3D%2219%22%20rx%3D%221%22%20fill%3D%22%23ffd479%22%2F%3E%3C%2Fsvg%3E">
+<style>
+:root{color-scheme:light;--bg:#f7f8fa;--surface:#fff;--surface-2:#f1f3f6;--line:#e2e6ec;--line-2:#cdd4dd;
+--ink:#16191d;--ink-2:#4a5361;--ink-3:#79828f;--accent:#2a4b8d;--accent-soft:#eaf0fb;--accent-line:#b9caea;
+--good:#1f6b3c;--good-bg:#e9f4ed;--warn:#a8620a;--warn-bg:#fdf3e3;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+--chrome:#e7ebf1e6;--chrome-line:#c6cfda}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#101216;--surface:#191c22;--surface-2:#21252d;
+--line:#2b303a;--line-2:#3a4150;--ink:#e8eaee;--ink-2:#a8b0bd;--ink-3:#7b8492;--accent:#6f96e0;
+--accent-soft:#1b2436;--accent-line:#2f4570;--good:#5fbf82;--good-bg:#14251b;--warn:#e0a34a;--warn-bg:#2a2113;
+--chrome:#1e222ae6;--chrome-line:#414957}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1020px;margin:0 auto;padding:2rem 1.2rem 5rem}
+h1{font-size:1.9rem;letter-spacing:-.02em;margin:0 0 .3rem}
+.sub{color:var(--ink-2);margin:0 0 1.5rem;max-width:70ch}
+h2{font-size:1.15rem;margin:2.3rem 0 .6rem;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+h2 .owner{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+border:1px solid var(--line-2);border-radius:999px;padding:.05rem .5rem}
+.hint{color:var(--ink-3);font-size:.85rem;margin:-.35rem 0 .7rem}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:.55rem;margin:0 0 1.6rem}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.6rem .75rem}
+.kpi b{display:block;font-family:var(--mono);font-size:1.45rem;line-height:1.1}
+.kpi span{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:700}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.card.quick{border-left:3px solid var(--accent)}
+details.grp{border-top:1px solid var(--line)}
+details.grp:first-child{border-top:0}
+summary.row{cursor:pointer;list-style:none;display:grid;grid-template-columns:1rem 1fr auto;gap:.15rem .7rem;
+padding:.7rem .9rem;align-items:center}
+summary.row::-webkit-details-marker{display:none}
+summary.row::before{content:'';width:0;height:0;border-left:5px solid var(--ink-3);
+border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s;justify-self:center}
+details[open]>summary.row::before{transform:rotate(90deg)}
+summary.row .t{font-weight:650;font-size:.95rem}
+summary.row .w{grid-column:2;color:var(--ink-2);font-size:.84rem;max-width:72ch}
+.leaf{display:grid;grid-template-columns:1rem 1fr auto;gap:.15rem .7rem;padding:.55rem .9rem}
+.leaf.solo{border-top:1px solid var(--line)}
+.leaf .t{grid-column:2;font-weight:600;font-size:.9rem}
+.leaf .w{grid-column:2;color:var(--ink-2);font-size:.82rem;max-width:72ch}
+.subs{background:var(--surface-2);padding:.15rem 0 .35rem;border-top:1px solid var(--line)}
+.subs .leaf{padding-left:2.1rem}
+.n{grid-column:3;justify-self:end;font-family:var(--mono);font-size:.68rem;color:var(--ink-3)}
+.st{grid-column:3;grid-row:1;justify-self:end;font-size:.66rem;font-weight:700;letter-spacing:.06em;
+text-transform:uppercase;border:1px solid;border-radius:999px;padding:.08rem .45rem;white-space:nowrap;height:fit-content}
+.st-done{color:var(--good);border-color:var(--good);background:var(--good-bg)}
+.st-next{color:var(--accent);border-color:var(--accent-line);background:var(--accent-soft)}
+.st-wait{color:var(--warn);border-color:var(--warn);background:var(--warn-bg)}
+.st-later{color:var(--ink-3);border-color:var(--line-2);background:var(--surface-2)}
+.callout{background:var(--good-bg);border-left:3px solid var(--good);border-radius:0 8px 8px 0;padding:.55rem .8rem;margin:.45rem 0 0}
+.callout .q{font-weight:650;font-size:.92rem;margin-bottom:.1rem}
+.callout .a{font-size:.85rem;color:var(--ink-2)}
+.callout .a b{color:var(--good)}
+table{border-collapse:collapse;width:100%;font-size:.87rem;background:var(--surface)}
+th,td{text-align:left;padding:.5rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+footer{margin-top:3rem;color:var(--ink-3);font-size:.8rem}
+.done-layer{font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.wait-row .t{font-weight:600}
+.done-card .leaf{opacity:.92}
+/* The pinned bar is the navigation. The counts are links, the layers are links, and it stays
+   put so no section has to be hunted for. */
+.topnav{position:sticky;top:0;z-index:20;margin:0 -1.2rem 1.4rem;padding:.5rem 1.2rem;
+background:var(--chrome);border-bottom:1px solid var(--chrome-line);backdrop-filter:saturate(1.4) blur(6px)}
+.topnav-in{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.nav-kpi{display:flex;align-items:baseline;gap:.3rem;text-decoration:none;color:var(--ink-2);
+background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:.16rem .6rem}
+.nav-kpi b{font-family:var(--mono);font-size:.95rem;color:var(--ink)}
+.nav-kpi span{font-size:.72rem}
+.nav-kpi:hover,.nav-lay:hover{border-color:var(--accent-line);color:var(--accent)}
+.nav-sep{width:1px;height:1.1rem;background:var(--line-2);margin:0 .2rem}
+.nav-lay{font-size:.74rem;text-decoration:none;color:var(--ink-3);border:1px solid transparent;
+border-radius:999px;padding:.16rem .45rem}
+h2{scroll-margin-top:4.2rem}
+h3{scroll-margin-top:4.2rem}
+.done-fold{margin:.3rem 0 0}
+.done-summary{cursor:pointer;display:flex;gap:.5rem;align-items:baseline;padding:.5rem .75rem;
+background:var(--surface);border:1px solid var(--line);border-radius:10px;list-style:none}
+.done-summary::-webkit-details-marker{display:none}
+.done-summary::before{content:'\25B8';color:var(--ink-3);font-size:.8rem}
+.done-fold[open] .done-summary::before{content:'\25BE'}
+.done-summary:hover{border-color:var(--accent-line)}
+.section-title{font-weight:650}
+.h3sub{font-size:.98rem;margin:1.2rem 0 .5rem;color:var(--ink-2)}
+.kpi a{color:inherit;text-decoration:none}
+</style>
+<div class="wrap"><h1>EARB self-assessment: backlog</h1>
+<p class="sub">Updated 2026-09-01.</p>
+<nav class="topnav"><div class="topnav-in">
+<a class="nav-kpi" href="#quick"><b>17</b><span>next</span></a>
+<a class="nav-kpi" href="#waiting"><b>8</b><span>waiting on somebody</span></a>
+<a class="nav-kpi" href="#done"><b>52</b><span>done</span></a>
+<a class="nav-kpi" href="#questions"><b>11</b><span>open questions</span></a>
+<span class="nav-sep"></span>
+<a class="nav-lay" href="#layer-0">Question set</a>
+<a class="nav-lay" href="#layer-1">Engine</a>
+<a class="nav-lay" href="#layer-2">the submitter</a>
+<a class="nav-lay" href="#layer-3">the assessor</a>
+<a class="nav-lay" href="#layer-4">admin</a>
+<a class="nav-lay" href="#layer-5">the executive view</a>
+<a class="nav-lay" href="#layer-6">Data and hosting</a>
+<a class="nav-lay" href="#layer-7">Process, for people</a>
+<a class="nav-lay" href="#resolved">Resolved</a>
+</div></nav>
+<h2 id="quick">Quick actions</h2><p class="hint">No discussion needed.</p>
+<div class="card quick">
+<div class="leaf solo">
+<span class="t">The assessor side keeps nothing between reloads</span><span class="st st-next">Next</span>
+<span class="w">Every audited score, verdict, note and history entry lives in memory only until the file is saved. A reload, a crash or a stray click on Clear takes the afternoon with it. The submitter side has autosaved to the browser since the start.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Decide where the tool is published</span><span class="st st-next">Next</span>
+<span class="w">canada-ca/TBS-OCIO-ESP already publishes a tool as one index.html in a folder, and you already have push access. One commit puts this at canada-ca.github.io/TBS-OCIO-ESP/earb-self-assessment/, with no new repo and no transfer. The repo is public, so Dan has to clear the 176 draft questions being visible first.</span>
+</div>
+</div>
+<h2 id="waiting">Waiting on somebody</h2><p class="hint">Chased, and not ours to finish. Each of these is also in its layer below.</p>
+<div class="tw"><table><thead><tr><th>Item</th><th>Who</th><th>Layer</th><th>Meanwhile</th></tr></thead><tbody>
+<tr><td>Confirm the answer type for every question</td><td>Dan</td><td>Question set</td><td>Ten are yes/no on our reading of the wording. The other 166 are scored 0 to 10.</td></tr>
+<tr><td>Confirm which no answers matter most</td><td>Dan</td><td>Question set</td><td>Every no colours its section red today. If some should not, that is his call.</td></tr>
+<tr><td>Set per-question criticality</td><td>Dan</td><td>Question set</td><td>Separate from section weight, and nothing in his workbook carries it.</td></tr>
+<tr><td>Fix the section weights that total 80</td><td>Dan</td><td>Question set</td><td>His error, confirmed in his own words. The tool shares the missing 20 proportionally and shows the normalised share.</td></tr>
+<tr><td>Bring in the dropdown answers</td><td>Dan</td><td>Question set</td><td>No picklists exist. Needs the 700 or more past assessments, which only he can hand over.</td></tr>
+<tr><td>Real sign-in</td><td>Dan</td><td>Interface: the assessor</td><td>Blocked on how identity gets checked at all, which is his answer to give.</td></tr>
+<tr><td>Nick’s answer on who performs the transfer</td><td>Nick</td><td>Data and hosting</td><td>Open an issue on canada-ca/welcome is the route he named. Whether he moves it or you do is the part still unanswered.</td></tr>
+<tr><td>Decide the triggers</td><td>Dan</td><td>Data and hosting</td><td>Submission, assignment, a changed score and a reminder are four different decisions.</td></tr>
+</tbody></table></div>
+<h2 id="layer-0">Question set <span class="owner">Dan</span></h2>
+<div class="card">
+<details class="grp" open><summary class="row">
+<span class="t">Answer types and criticality</span><span class="st st-wait">Waiting</span>
+<span class="w">The shape of the questions, which Dan called the biggest remaining piece. Our reading is in the tool and labelled provisional.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">Confirm the answer type for every question</span><span class="st st-wait">Waiting</span>
+<span class="w">Ten are yes/no on our reading of the wording. The other 166 are scored 0 to 10.</span>
+</div>
+<div class="leaf">
+<span class="t">Confirm which no answers matter most</span><span class="st st-wait">Waiting</span>
+<span class="w">Every no colours its section red today. If some should not, that is his call.</span>
+</div>
+<div class="leaf">
+<span class="t">Set per-question criticality</span><span class="st st-wait">Waiting</span>
+<span class="w">Separate from section weight, and nothing in his workbook carries it.</span>
+</div>
+</div></details>
+<details class="grp" open><summary class="row">
+<span class="t">Content still owed</span><span class="st st-wait">Waiting</span>
+<span class="w">None of this is ours to write.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">Fix the section weights that total 80</span><span class="st st-wait">Waiting</span>
+<span class="w">His error, confirmed in his own words. The tool shares the missing 20 proportionally and shows the normalised share.</span>
+</div>
+<div class="leaf">
+<span class="t">Add security and privacy questions</span><span class="st st-later">Later</span>
+<span class="w">Neither is represented. A security review is already asking. The topic view makes the gap visible in the meantime.</span>
+</div>
+<div class="leaf">
+<span class="t">Bring in the dropdown answers</span><span class="st st-wait">Waiting</span>
+<span class="w">No picklists exist. Needs the 700 or more past assessments, which only he can hand over.</span>
+</div>
+</div></details>
+</div>
+<h2 id="layer-1">Engine <span class="owner">us</span></h2>
+<div class="card">
+<details class="grp" open><summary class="row">
+<span class="t">Storage and concurrency</span><span class="st st-next">Next</span>
+<span class="w">Everything is unclassified, so it can all live online. The seam is written; the store is not.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">One deliberate first submit</span><span class="st st-next">Next</span>
+<span class="w">You should know the moment your work becomes visible to TBS.</span>
+</div>
+<div class="leaf">
+<span class="t">Autosave online after that</span><span class="st st-next">Next</span>
+<span class="w">Like a document. Every later change writes through.</span>
+</div>
+<div class="leaf">
+<span class="t">Field-level last write wins, with a marker</span><span class="st st-next">Next</span>
+<span class="w">Not locking. Two people in different questions never collide.</span>
+</div>
+<div class="leaf">
+<span class="t">Tell the other person it changed under them</span><span class="st st-next">Next</span>
+<span class="w">The audit trail already keeps both accounts. What is missing is the live signal while somebody is looking at the line.</span>
+</div>
+</div></details>
+</div>
+<h2 id="layer-2">Interface: the submitter <span class="owner">us</span></h2>
+<div class="card">
+<details class="grp" open><summary class="row">
+<span class="t">Marking</span><span class="st st-next">Next</span>
+<span class="w">Somebody still has to state the marking of what they point at.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">Collapse three pickers into one</span><span class="st st-next">Next</span>
+<span class="w">The footer’s seven pills bypass the whole design.</span>
+</div>
+</div></details>
+<details class="grp" open><summary class="row">
+<span class="t">Submitting</span><span class="st st-next">Next</span>
+<span class="w">The moment work stops being private. Everything here is about the person knowing that.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">First-submit confirmation</span><span class="st st-next">Next</span>
+<span class="w">Names what is about to go online and asks them to confirm it is unclassified.</span>
+</div>
+</div></details>
+</div>
+<h2 id="layer-3">Interface: the assessor <span class="owner">us</span></h2>
+<div class="card">
+<details class="grp" open><summary class="row">
+<span class="t">Identity</span><span class="st st-wait">Waiting</span>
+<span class="w">Their name goes against a number somebody may dispute.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">Real sign-in</span><span class="st st-wait">Waiting</span>
+<span class="w">Blocked on how identity gets checked at all, which is his answer to give.</span>
+</div>
+</div></details>
+</div>
+<h2 id="layer-4">Interface: admin <span class="owner">us</span></h2>
+<div class="card">
+<details class="grp" open><summary class="row">
+<span class="t">Admin-only actions</span><span class="st st-later">Later</span>
+<span class="w">Nobody has decided whether admin is a role. Listed so the roles matrix is complete.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">Withdraw a record</span><span class="st st-later">Later</span>
+<span class="w">Out of every statistic, still in the list. Nothing is deleted.</span>
+</div>
+<div class="leaf">
+<span class="t">Re-assign an assessor</span><span class="st st-later">Later</span>
+<span class="w">Somebody leaves, or a file needs a second pair of eyes.</span>
+</div>
+<div class="leaf">
+<span class="t">Clear out test submissions</span><span class="st st-later">Later</span>
+<span class="w">Dan raised it and parked it.</span>
+</div>
+</div></details>
+</div>
+<h2 id="layer-5">Interface: the executive view <span class="owner">us</span></h2>
+<div class="card">
+<details class="grp" open><summary class="row">
+<span class="t">Dan’s twelve-month questions</span><span class="st st-later">Later</span>
+<span class="w">The reason the data is worth capturing at all. All of it needs more than one record to mean anything.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">Per-question averages and histograms</span><span class="st st-later">Later</span>
+<span class="w">Which questions the whole GC is weak on, which is the argument for changing a question rather than a department.</span>
+</div>
+<div class="leaf">
+<span class="t">Average by department</span><span class="st st-later">Later</span>
+<span class="w">Needs enough records that a department average is not one initiative.</span>
+</div>
+<div class="leaf">
+<span class="t">Best and worst evidence per question</span><span class="st st-later">Later</span>
+<span class="w">Gives a submitter an example of what good looks like, which is the thing people ask for first.</span>
+</div>
+</div></details>
+</div>
+<h2 id="layer-6">Data and hosting <span class="owner">us and TBS</span></h2>
+<div class="card">
+<details class="grp" open><summary class="row">
+<span class="t">Get into canada-ca</span><span class="st st-next">Next</span>
+<span class="w">Access is done. Publishing is a commit away in a repo you can already push to. A repo of our own is a separate, slower question.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">Publish into canada-ca/TBS-OCIO-ESP</span><span class="st st-next">Next</span>
+<span class="w">One folder holding one index.html, the same shape as earb-forward-agenda, which that repo already serves. Needs Dan to clear the questions being public.</span>
+</div>
+<div class="leaf">
+<span class="t">Nick’s answer on who performs the transfer</span><span class="st st-wait">Waiting</span>
+<span class="w">Open an issue on canada-ca/welcome is the route he named. Whether he moves it or you do is the part still unanswered.</span>
+</div>
+<div class="leaf">
+<span class="t">Retire the separate preview repo</span><span class="st st-next">Next</span>
+<span class="w">Pages can come from the canada-ca repo once it exists.</span>
+</div>
+</div></details>
+<details class="grp" open><summary class="row">
+<span class="t">Where submissions land</span><span class="st st-next">Next</span>
+<span class="w">Dan asked us to figure it out. GitHub Pages serves static files and cannot accept a write, so something has to receive one.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">A write endpoint</span><span class="st st-next">Next</span>
+<span class="w">An Azure Function is the cheapest route: canada-ca/TBS-OCIO-ESP already builds through Azure Pipelines, so the account and the approval path exist.</span>
+</div>
+<div class="leaf">
+<span class="t">Open the CSP to exactly that origin</span><span class="st st-next">Next</span>
+<span class="w">One line in build.mjs. The page blocks every outbound request until then.</span>
+</div>
+<div class="leaf">
+<span class="t">Per-user auth</span><span class="st st-later">Later</span>
+<span class="w">The known limit. Microsoft Entra is the obvious route, since departments already sign in with it.</span>
+</div>
+</div></details>
+<details class="grp" open><summary class="row">
+<span class="t">Notifications</span><span class="st st-wait">Waiting</span>
+<span class="w">GC Notify is the sanctioned service and is already in Dan’s own rubric at application question Q33. What triggers one is his decision and he has not made it.</span>
+</summary><div class="subs">
+<div class="leaf">
+<span class="t">Decide the triggers</span><span class="st st-wait">Waiting</span>
+<span class="w">Submission, assignment, a changed score and a reminder are four different decisions.</span>
+</div>
+</div></details>
+</div>
+<h2 id="layer-7">Process, for people <span class="owner">Dan and John</span></h2>
+<div class="card">
+<div class="leaf solo">
+<span class="t">How John’s team validates evidence</span><span class="st st-later">Later</span>
+<span class="w">Their job changes completely and Dan expects resistance.</span>
+</div>
+<div class="leaf solo">
+<span class="t">What the intake accepts, and from whom</span><span class="st st-later">Later</span>
+<span class="w">Dan called it a protocol for the humans.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Which initiatives must submit</span><span class="st st-later">Later</span>
+<span class="w">His call. Blocks nothing we build.</span>
+</div>
+</div>
+<h2 id="done">Done</h2>
+<p class="hint">Built and tested, kept for good, newest first. 50 items since Dan's review on 1 September.</p>
+<details class="done-fold"><summary class="done-summary">
+<span class="section-title">Everything done</span><span class="muted small">52 items, by layer</span>
+</summary>
+<h3 class="h3sub">Quick action <span class="muted small">17</span></h3>
+<div class="card done-card">
+<div class="leaf solo">
+<span class="t">Settings marks the unbuilt parts as unbuilt</span><span class="st st-done">Done</span>
+<span class="w">It promised a submit act and a withdrawal path as though both existed. Neither is written, and copy that describes a feature has to say whether the feature is there.</span>
+</div>
+<div class="leaf solo">
+<span class="t">README and Settings stop describing a local-only tool</span><span class="st st-done">Done</span>
+<span class="w">Both said the tool cannot transmit and that the repo is private. Neither was true.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Overview bar moves on the first keystroke</span><span class="st st-done">Done</span>
+<span class="w">It counted the three groups, and group one needs four fields. It now measures the six fields while the count still reads in groups.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Rail’s Overview row shows a count and a bar</span><span class="st st-done">Done</span>
+<span class="w">Every other rail row had both; Overview had neither, which reads as a row stuck at zero.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Every backlog item carries its reason</span><span class="st st-done">Done</span>
+<span class="w">Five items had a title and nothing else, so they read as jargon. All of them now say why they exist.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Backlog gets jump links and a Done section that stays</span><span class="st st-done">Done</span>
+<span class="w">Done was at the bottom of eight layers with no way to reach it. Every section now has a link at the top, and Done is split into what came after Dan’s review and what he had already seen.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The prose linter takes any file</span><span class="st st-done">Done</span>
+<span class="w">The writing rules were being applied from memory for chat replies, and em dashes went out. Replies go through the same linter as the app copy now.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The rail stops repeating the domain tabs on a narrow screen</span><span class="st st-done">Done</span>
+<span class="w">Below 860px the rail lies down into a strip under the tabs. On the overview it had no section rows to show, so the same five items appeared twice. Found while checking the marking banner on the live page.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The frame stops reading as part of the page</span><span class="st st-done">Done</span>
+<span class="w">Measured: the header separated from the page by 1.13 to 1 in light and 1.08 to 1 in dark, and the page footer was exactly the page colour. The frame has its own edge token, the dark frame is now lighter than the page instead of darker, the footer has a ground, and a shadow appears only once content scrolls under it.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Not applicable hides the scale and keeps the score</span><span class="st st-done">Done</span>
+<span class="w">The eleven descriptions explain a score, and a question that does not apply has none. Ticking the box also used to erase the score, and unticking did not give it back.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Nothing is destroyed in one step</span><span class="st st-done">Done</span>
+<span class="w">An audit found twenty destructive actions and eleven of them destroyed something with no prompt at all. Every one now asks, keeps a copy where it can, or leaves the work alone.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Question ids lose a letter</span><span class="st st-done">Done</span>
+<span class="w">BU-Q1 is now B-Q1. The four domain initials are distinct, so the second letter carried nothing. Cheap today because no real submission exists; expensive once ids are column names in somebody exported spreadsheet.</span>
+</div>
+<div class="leaf solo">
+<span class="t">A library of question sets</span><span class="st st-done">Done</span>
+<span class="w">Sets accumulate now. Settings lists every one this browser holds, marks the one in use, and takes another. Adding one keeps the old ones and becomes current. Deleting is two steps, offers the file back first, and is refused on the built-in set and on the set in use.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The save badge says there is no online copy</span><span class="st st-done">Done</span>
+<span class="w">She asked where to save online. There is nowhere, and the badge now says so on hover instead of leaving "draft saved" to be read as the whole story.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The email subject line is readable</span><span class="st st-done">Done</span>
+<span class="w">It said "EARB evidence - m - [question]", with a placeholder nobody filled in. It now names what it is, the initiative and the question number, and the evidence box offers a Copy button.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The banner stops printing the wrong marking</span><span class="st st-done">Done</span>
+<span class="w">Choosing Protected A stamped PROTECTED A across an unclassified document, top, bottom and every printout. It reads UNCLASSIFIED with "evidence up to Protected A" beside it.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The marking question is about the evidence</span><span class="st st-done">Done</span>
+<span class="w">The assessment is always unclassified, so asking how the assessment is marked was the wrong question. It asks for the highest marking of the artefacts the answers point at, which is what an assessor needs access to.</span>
+</div>
+</div>
+<h3 class="h3sub">Engine <span class="muted small">6</span></h3>
+<div class="card done-card">
+<div class="leaf solo">
+<span class="t">The three calls a real write needs</span><span class="st st-done">Done</span>
+<span class="w">Saving, saved, failed with a reason. Nothing drives them yet, so the wording is settled before the write exists.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The store seam</span><span class="st st-done">Done</span>
+<span class="w">src/store.ts. One constant from live, and the dashboard already reads through it.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Two-topic scoring</span><span class="st st-done">Done</span>
+<span class="w">Once in the overall, at full weight inside each topic, because the weight genuinely differs by topic.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Topic metadata and per-topic roll-up</span><span class="st st-done">Done</span>
+<span class="w">Security, privacy, cost, data, business and technology, visible without inventing a fifth domain.</span>
+</div>
+<div class="leaf solo">
+<span class="t">A no answer colours its section</span><span class="st st-done">Done</span>
+<span class="w">The question, its section, its rail row and its domain tab. It stops nothing.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Multiple answer types</span><span class="st st-done">Done</span>
+<span class="w">A type field with scale as the default, so nothing existing breaks.</span>
+</div>
+</div>
+<h3 class="h3sub">Interface: the submitter <span class="muted small">12</span></h3>
+<div class="card done-card">
+<div class="leaf solo">
+<span class="t">One live indicator, not one per repaint</span><span class="st st-done">Done</span>
+<span class="w">Each repaint added another listener holding a dead node. Harmless while the state never changed, and a leak the moment writes start.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Silent until something is actually written</span><span class="st st-done">Done</span>
+<span class="w">It opened at "draft saved in browser" on an empty page, which is a claim ahead of the fact.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Save status indicator</span><span class="st st-done">Done</span>
+<span class="w">Draft in browser, saving, saved, or not saved with a reason. It sits in the header now, so it is on every screen and on a phone; it was on the 21 question pages only, and CSS hid it below 720px.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Classified panel with an acknowledgement toggle</span><span class="st st-done">Done</span>
+<span class="w">What to do instead, at the moment it is relevant.</span>
+</div>
+<div class="leaf solo">
+<span class="t">One big unclassified tile, the six grouped behind it</span><span class="st st-done">Done</span>
+<span class="w">The default must not be taxed by the rare path.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The unmarked banner lands on the marking question</span><span class="st st-done">Done</span>
+<span class="w">It scrolled to an element that only exists on the overview, so from any of the twenty question pages it did nothing at all.</span>
+</div>
+<div class="leaf solo">
+<span class="t">It asks once, not every time</span><span class="st st-done">Done</span>
+<span class="w">After the pledge, switching between classified markings does not ask again. The panel on the overview stays as the reference.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The way out changes the answer</span><span class="st st-done">Done</span>
+<span class="w">An accidental click needs an exit that is not a dismissal: "this is unclassified after all" sets the marking back rather than waving the warning away.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The close control is dead until the box is ticked</span><span class="st st-done">Done</span>
+<span class="w">Grey and unclickable, and it says "tick the box first". Escape does not dismiss it and clicking outside does nothing.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Any marking above unclassified takes over the screen</span><span class="st st-done">Done</span>
+<span class="w">Whichever control set it. The strip, the picker, and anything added later go through one function, so they cannot drift apart again.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Email fallback, with a pattern</span><span class="st st-done">Done</span>
+<span class="w">Marking, sent by email, subject line written for you, so an assessor can find it.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Ask for a link</span><span class="st st-done">Done</span>
+<span class="w">Point at where it lives, and make sure your assessor can open it.</span>
+</div>
+</div>
+<h3 class="h3sub">Interface: the assessor <span class="muted small">8</span></h3>
+<div class="card done-card">
+<div class="leaf solo">
+<span class="t">Load a question set moves here</span><span class="st st-done">Done</span>
+<span class="w">It belongs to whoever maintains the instrument. A submitter is told where it lives and not handed the control.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Evidence read-only</span><span class="st st-done">Done</span>
+<span class="w">Already true, and now held true by a test.</span>
+</div>
+<div class="leaf solo">
+<span class="t">The edit exchange, visible</span><span class="st st-done">Done</span>
+<span class="w">The line says it was edited and by whom. The full back and forth opens on request, and nothing is overwritten.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Assessor recorded per question</span><span class="st st-done">Done</span>
+<span class="w">Two assessors on one high-profile file. Each change carries a name, a time and a reason.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Accept-all per section</span><span class="st st-done">Done</span>
+<span class="w">He asked for it by name. It touches no score, and skips any changed score that still needs a reason.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Justification required on a changed score</span><span class="st st-done">Done</span>
+<span class="w">His rule. The file cannot be saved while one is missing, and the button says how many are outstanding.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Nothing an assessor typed is overwritten silently</span><span class="st st-done">Done</span>
+<span class="w">Four places did it. Agree-with-all replaced a verdict somebody had already given, the note field rewrote the reason on whatever change was last in the trail, reloading a file of the same name discarded the audit attached to it without a word, and the email button wrote over a link somebody had typed.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Mockup verification screen</span><span class="st st-done">Done</span>
+<span class="w">Labelled a mockup, the departmental-account button visibly disabled, everything unverified.</span>
+</div>
+</div>
+<h3 class="h3sub">Interface: admin <span class="muted small">5</span></h3>
+<div class="card done-card">
+<div class="leaf solo">
+<span class="t">It says what it can currently see</span><span class="st st-done">Done</span>
+<span class="w">With no store, that is this browser and the files opened this session. The page says so rather than looking live.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Portfolio CSV</span><span class="st st-done">Done</span>
+<span class="w">One row per record, topic columns included.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Every record, weakest first</span><span class="st st-done">Done</span>
+<span class="w">The list is a worklist. Red rows are the ones with a no answer.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Averages by domain and by topic</span><span class="st st-done">Done</span>
+<span class="w">The topic cut is the one a single assessment cannot show: security spread thin over four domains looks fine in each of them.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Reachable without going through the assessor view</span><span class="st st-done">Done</span>
+<span class="w">It sat behind two clicks on the assessor side with nothing on the start page pointing at it. There is a line under the assessor link now, and it asks who you are the same way.</span>
+</div>
+</div>
+<h3 class="h3sub">Data and hosting <span class="muted small">2</span></h3>
+<div class="card done-card">
+<div class="leaf solo">
+<span class="t">Reply to Nick: transfer the existing repo</span><span class="st st-done">Done</span>
+<span class="w">Sent. 28 commits of history, all yours.</span>
+</div>
+<div class="leaf solo">
+<span class="t">GitHub Pages cannot serve a private repo on a free account</span><span class="st st-done">Done</span>
+<span class="w">Checked: all 35 Pages sites in canada-ca come from public repos, and no private repo there serves one. This is why a separate public preview repo exists.</span>
+</div>
+</div>
+<h3 class="h3sub">Already there when he reviewed it</h3>
+<div class="card done-card">
+<div class="leaf solo">
+<span class="t">Submitter answers and assessor scores are separate fields</span><span class="st st-done">Done</span>
+<span class="w">Which is why a submitter and an assessor cannot collide at all.</span>
+</div>
+<div class="leaf solo">
+<span class="t">Draft the email</span><span class="st st-done">Done</span>
+<span class="w">Opens the person’s own mail client with the message written. All a static page can do.</span>
+</div>
+</div>
+</details>
+<h2 id="resolved">Resolved questions</h2><p class="hint">Settled, and how.</p>
+<div class="callout"><div class="q">Should the tool hold classified information?</div><div class="a"><b>Resolved.</b> No. Nothing protected or classified goes in at all, settled with Dan on 1 September. That removed the second deployment, the local-only engine, the theme switch, and the whole recall problem.</div></div>
+<div class="callout"><div class="q">What happens to online data when a marking rises?</div><div class="a"><b>Resolved.</b> Dropped. The tool never stores classified evidence, so the question cannot arise.</div></div>
+<div class="callout"><div class="q">Does a two-topic question count twice overall?</div><div class="a"><b>Resolved.</b> No. Once in the overall score, and at full weight inside each topic, which is where the weights genuinely differ.</div></div>
+<div class="callout"><div class="q">File sharing for a team filling one in together?</div><div class="a"><b>Resolved.</b> No files. Everything is online, so version control stops being a problem the tool has to solve.</div></div>
+<div class="callout"><div class="q">Deletion rights</div><div class="a"><b>Resolved.</b> Nothing is ever hard-deleted. A record is withdrawn and left out of the statistics.</div></div>
+<div class="callout"><div class="q">One build or two?</div><div class="a"><b>Resolved.</b> One. Submission is a capability the hosting turns on.</div></div>
+<div class="callout"><div class="q">Where the plan lives</div><div class="a"><b>Resolved.</b> This page. The Markdown version is deleted.</div></div>
+<div class="callout"><div class="q">Org access to canada-ca</div><div class="a"><b>Resolved.</b> Done. Nick invited you, and the TBS-OCIO-ESP team gives push access to canada-ca/TBS-OCIO-ESP.</div></div>
+<div class="callout"><div class="q">Who may replace the question set?</div><div class="a"><b>Resolved.</b> The assessor and admin side only. Loading one clears every answer, so a submitter is told where it lives and not handed the control.</div></div>
+<div class="callout"><div class="q">How does the dashboard stay current?</div><div class="a"><b>Resolved.</b> By storing nothing. It recalculates each record from its answers as the page draws, so there is no roll-up that can go stale.</div></div>
+<h2 id="questions">Open questions</h2><p class="hint">Not work. Somebody owes an answer.</p>
+<div class="tw"><table><thead><tr><th>Question</th><th>Who owes it</th><th>Blocks</th><th>Meanwhile</th></tr></thead><tbody>
+<tr><td>Where an assessor’s work is kept between reloads</td><td>us</td><td>Nothing yet</td><td>It is in memory only. Saving the audited file is the only copy</td></tr>
+<tr><td>Can the 176 draft questions be public</td><td>Dan</td><td>Publishing inside canada-ca</td><td>The preview sits on a personal public repo, which is the same exposure with less visibility</td></tr>
+<tr><td>Who may edit a stored assessment, and how it is checked</td><td>Dan</td><td>Real authentication</td><td>Mockup screen, everything labelled unverified</td></tr>
+<tr><td>Verifying an assessor’s identity</td><td>Dan</td><td>Real sign-in</td><td>Typed name, labelled unverified on every change it records</td></tr>
+<tr><td>Is admin a role, or an assessor with more buttons?</td><td>Dan</td><td>The admin-only actions</td><td>The dashboard is built; the actions are listed and marked unbuilt</td></tr>
+<tr><td>Notification triggers and recipients</td><td>Dan</td><td>Notifications</td><td>Draft the email. GC Notify is the sanctioned route</td></tr>
+<tr><td>Which questions are yes/no, and which no answers matter most</td><td>Dan</td><td>Nothing</td><td>Ten on our reading, labelled provisional in the app</td></tr>
+<tr><td>The routing thresholds</td><td>Dan</td><td>Nothing</td><td>Interpolated between two numbers he named, labelled provisional</td></tr>
+<tr><td>Which initiatives must submit</td><td>Dan</td><td>Nothing</td><td>Ignore for now</td></tr>
+<tr><td>Who performs the canada-ca transfer</td><td>Nick</td><td>The repo move</td><td>Asked. An issue on canada-ca/welcome is the route he named</td></tr>
+<tr><td>What the production intake should be</td><td>TBS</td><td>Production only</td><td>The prototype answer is an Azure Function plus one CSP line</td></tr>
+</tbody></table></div>
+<footer>42 open, 52 done. Generated from NOTES/backlog.data.mjs by tools/build-backlog.mjs.</footer></div>
